@@ -6,7 +6,8 @@ import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
-const socket = io('http://127.0.0.1:4000');
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:4000';
+const socket = io(BACKEND_URL);
 
 // Premium "Real-Life" Icons
 const userIcon = L.divIcon({
@@ -214,7 +215,7 @@ const App = () => {
         setUserLocation(location);
 
         try {
-            const resp = await fetch('http://127.0.0.1:4000/api/sos', {
+            const resp = await fetch(`${BACKEND_URL}/api/sos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

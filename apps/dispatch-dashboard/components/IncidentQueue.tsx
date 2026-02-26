@@ -83,12 +83,13 @@ export default function IncidentQueue() {
     }, []);
 
     const handleAssign = async (incidentId: string) => {
+        const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:4000';
         try {
             // In a real system, we'd have an ambulance picker. 
             // For now, we'll let the backend pick the first available one via the manualAssign endpoint,
             // or we can fetch available ambulances here.
 
-            const response = await fetch('http://127.0.0.1:4000/api/simulator/assign', {
+            const response = await fetch(`${BACKEND_URL}/api/simulator/assign`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

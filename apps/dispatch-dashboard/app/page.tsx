@@ -6,6 +6,8 @@ import IncidentQueue from '@/components/IncidentQueue';
 import MapPlaceholder from '@/components/MapPlaceholder';
 import { Shield, Bell, Settings, User } from 'lucide-react';
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:4000';
+
 export default function DispatchDashboard() {
   const [simulatorActive, setSimulatorActive] = React.useState(false);
   const [autoDispatch, setAutoDispatch] = React.useState(true);
@@ -13,7 +15,7 @@ export default function DispatchDashboard() {
   React.useEffect(() => {
     const checkStatus = async () => {
       try {
-        const resp = await fetch('http://127.0.0.1:4000/health');
+        const resp = await fetch(`${BACKEND_URL}/health`);
         const data = await resp.json();
         setSimulatorActive(data.simulator === 'active');
       } catch (e) {
@@ -25,7 +27,7 @@ export default function DispatchDashboard() {
 
   const toggleSimulator = async () => {
     try {
-      const resp = await fetch('http://127.0.0.1:4000/api/simulator/toggle', {
+      const resp = await fetch(`${BACKEND_URL}/api/simulator/toggle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ active: !simulatorActive })
@@ -39,7 +41,7 @@ export default function DispatchDashboard() {
 
   const toggleAutoDispatch = async () => {
     try {
-      const resp = await fetch('http://127.0.0.1:4000/api/simulator/auto-dispatch', {
+      const resp = await fetch(`${BACKEND_URL}/api/simulator/auto-dispatch`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ enabled: !autoDispatch })

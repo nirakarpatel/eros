@@ -145,7 +145,8 @@ class EROSSimulator {
         };
 
         try {
-            const response = await axios.post('http://127.0.0.1:4000/api/sos', incident);
+            const API_URL = process.env.API_URL || 'http://127.0.0.1:4000';
+            const response = await axios.post(`${API_URL}/api/sos`, incident);
             const incidentId = response.data.id;
             this.pendingIncidents.set(incidentId, { ...incident, id: incidentId, status: 'pending' });
             this.broadcastState();
