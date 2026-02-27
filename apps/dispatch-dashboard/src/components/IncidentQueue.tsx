@@ -1,7 +1,5 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
-import { socket } from '@/lib/socket';
+import { socket } from '../lib/socket';
 import { AlertCircle, Clock, MapPin, Ambulance, User } from 'lucide-react';
 
 interface Emergency {
@@ -83,7 +81,7 @@ export default function IncidentQueue() {
     }, []);
 
     const handleAssign = async (incidentId: string) => {
-        const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:4000';
+        const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:4000';
         try {
             // In a real system, we'd have an ambulance picker. 
             // For now, we'll let the backend pick the first available one via the manualAssign endpoint,

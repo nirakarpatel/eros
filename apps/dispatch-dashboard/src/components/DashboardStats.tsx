@@ -1,8 +1,6 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import { Ambulance, Activity, Home, Users } from 'lucide-react';
-import { socket } from '@/lib/socket';
+import { socket } from '../lib/socket';
 
 export default function DashboardStats() {
     const [statsData, setStatsData] = useState({
