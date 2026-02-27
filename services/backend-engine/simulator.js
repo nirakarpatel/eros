@@ -47,7 +47,7 @@ class EROSSimulator {
 
         // Force start movement interval immediately
         this.movementInterval = setInterval(() => this.updateSimulationStep(), 1500);
-        this.sosInterval = setInterval(() => this.generateRandomSOS(), 5000);
+        this.sosInterval = setInterval(() => this.generateRandomSOS(), 20000); // 3 per minute average
 
         // Handle initial state requests
         this.io.on('connection', (socket) => {
@@ -70,8 +70,8 @@ class EROSSimulator {
         clearInterval(this.sosInterval);
         clearInterval(this.movementInterval);
 
-        // Generate SOS more frequently to test surge
-        this.sosInterval = setInterval(() => this.generateRandomSOS(), 5000);
+        // Generate SOS less frequently for demo stability
+        this.sosInterval = setInterval(() => this.generateRandomSOS(), 20000);
         this.movementInterval = setInterval(() => this.updateSimulationStep(), 1500); // Faster updates
 
         this.broadcastState();
@@ -109,8 +109,11 @@ class EROSSimulator {
 
         this.checkSurgeAndReleaseUnits(incident.city);
 
-        // Broadcast new incident to all dispatchers
-        this.io.emit('new_emergency', fullIncident);
+        // ONLY focus map (emit 'new_emergency') for real citizen incidents
+        if (!incident.isDemo) {
+            console.log(`[SIMULATOR] FOCUS: Real SOS from Citizen App - ${incidentId}`);
+            this.io.emit('new_emergency', fullIncident);
+        }
 
         if (this.autoDispatch && this.simulatorActive) {
             // Slight delay to ensure frontend processes 'new_emergency' first
@@ -125,8 +128,8 @@ class EROSSimulator {
     async generateRandomSOS() {
         if (!this.simulatorActive) return;
 
-        // More frequent for the demo - 33% chance every 5 seconds
-        if (Math.random() > 0.33) return;
+        // Adjusted probability for ~2 demo incidents per minute (with 20s interval)
+        if (Math.random() > 0.6) return;
 
         const city = INDIA_CITIES[Math.floor(Math.random() * INDIA_CITIES.length)];
         const lat = city.lat + (Math.random() - 0.5) * 0.15;
@@ -136,6 +139,7 @@ class EROSSimulator {
         const type = types[Math.floor(Math.random() * types.length)];
 
         const incident = {
+            isDemo: true, // Mark as demo to avoid map focus hijack
             citizenId: `DUMMY-${Math.floor(Math.random() * 9000) + 1000}`,
             userProfile: { name: 'Demo Incident' },
             location: { lat, lng, address: `Demo Alert in ${city.name}` },
