@@ -250,11 +250,13 @@ class EROSSimulator {
             const active = this.activeIncidents.get(amb.id);
             if (!active) {
                 // Return to base logic if available and not at base
-                if (amb.status === 'available') {
+                if (amb.status === 'available' && amb.location) {
                     const baseHosp = this.hospitals.find(h => h.id === amb.baseHospitalId);
-                    const distH = Math.sqrt(Math.pow(baseHosp.location.lat - amb.location.lat, 2) + Math.pow(baseHosp.location.lng - amb.location.lng, 2));
-                    if (distH > 0.001) {
-                        this.moveTowards(amb, baseHosp.location, 0.002);
+                    if (baseHosp && baseHosp.location) {
+                        const distH = Math.sqrt(Math.pow(baseHosp.location.lat - amb.location.lat, 2) + Math.pow(baseHosp.location.lng - amb.location.lng, 2));
+                        if (distH > 0.001) {
+                            this.moveTowards(amb, baseHosp.location, 0.0034);
+                        }
                     }
                 }
                 return;
@@ -263,6 +265,9 @@ class EROSSimulator {
             if (active.path && active.path.length > 0) {
                 // Move along the path
                 const targetPoint = active.path[active.pathIndex];
+
+                if (!targetPoint || !amb.location) return;
+
                 const distToPoint = Math.sqrt(Math.pow(targetPoint.lat - amb.location.lat, 2) + Math.pow(targetPoint.lng - amb.location.lng, 2));
 
                 if (distToPoint < 0.0005) {
@@ -272,7 +277,7 @@ class EROSSimulator {
                         this.handleStateTransition(amb, active);
                     }
                 } else {
-                    this.moveTowards(amb, targetPoint, 0.003); // Adjust speed for road following
+                    this.moveTowards(amb, targetPoint, 0.0051); // Adjust speed for road following
                 }
             } else {
                 // Fallback to straight line if no path yet
@@ -281,7 +286,7 @@ class EROSSimulator {
                     amb.location = { ...active.targetLocation };
                     this.handleStateTransition(amb, active);
                 } else {
-                    this.moveTowards(amb, active.targetLocation, 0.004);
+                    this.moveTowards(amb, active.targetLocation, 0.0068);
                 }
             }
 
